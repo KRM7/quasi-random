@@ -6,7 +6,6 @@ Martin Roberts, 2018. "[The Unreasonable Effectiveness of Quasirandom Sequences]
 <br>
 
 ### Plots showing some generated sequences
-<br>
 
 #### <center>2-dimensions</center>
 
