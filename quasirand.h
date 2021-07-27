@@ -24,7 +24,7 @@ namespace quasirand
     public:
 
         /* Construct the generator in dim dimensions with a seed. */
-        QuasiRandom(size_t dim, double seed = 0.5) : dim(dim), s(seed)
+        QuasiRandom(size_t dim) : dim(dim)
         {
             if (dim == 0)
             {
@@ -37,10 +37,10 @@ namespace quasirand
             for (size_t i = 0; i < dim; i++)
             {
                 alpha.push_back(1.0/pow(phid, i + 1));
-                point.push_back(alpha[i] + s);
+                point.push_back(s);
             }
         }
-        
+
         /* Generate the next random point in the sequence. */
         std::vector<double> operator()()
         {
@@ -73,7 +73,7 @@ namespace quasirand
             }
         }
 
-        /* Set the seed. */
+        /* Set the seed of the generator. */
         void seed(double seed)
         {
             s = seed;
@@ -81,7 +81,7 @@ namespace quasirand
 
     private:
         const size_t dim;
-        double s;
+        double s = 0.5;
         std::vector<double> alpha;
         std::vector<double> point;
 
