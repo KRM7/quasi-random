@@ -1,11 +1,43 @@
-## Quasi-random number generator
+# Quasi-random number generator
 
-A simple quasi-random number generator implementation in C++ for generating low-discrepancy sequences. It generates points in any number of dimensions on a unit hypercube.  
-This generator is based on:  
-Martin Roberts, 2018. "[The Unreasonable Effectiveness of Quasirandom Sequences](http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/)" 
+<p>A simple quasi-random number generator implementation in C++ for generating low-discrepancy sequences. <br>
+It generates points in any number of dimensions on a unit hypercube.  
+</p>
+
+The generator is based on:  
+&nbsp;&nbsp; *Martin Roberts, 2018. "[The Unreasonable Effectiveness of Quasirandom Sequences](http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/)"*  
 <br>
 
-### Plots showing some generated sequences
+## Usage example
+<br>
+
+```cpp
+#include "quasirand.h"
+
+using namespace quasirand;
+
+int main()
+{
+    /* Initialize the generator in 3 dimensions. */
+    QuasiRandom qrng(3);
+
+    /* Generate the next point of the sequence. */
+    vector<double> point = qrng();
+
+    /* Generate the 500th point of the sequence. */
+    vector<double> point500 = qrng(500);
+
+    /* Discard the next point from the sequence. */
+    qrng.discard();
+
+    /* Set a seed different from the default one. */
+    qrng.seed(0.13);
+
+    return 0;
+}
+```
+
+## Plots showing some generated sequences
 
 #### <center>2-dimensions</center>
 
