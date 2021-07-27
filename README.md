@@ -6,10 +6,8 @@ It generates points in any number of dimensions on a unit hypercube.
 
 The generator is based on:  
 &nbsp;&nbsp; *Martin Roberts, 2018. "[The Unreasonable Effectiveness of Quasirandom Sequences](http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/)"*  
-<br>
 
 ## Usage example
-<br>
 
 ```cpp
 #include "quasirand.h"
