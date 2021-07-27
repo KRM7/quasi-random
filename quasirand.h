@@ -40,6 +40,7 @@ namespace quasirand
                 point.push_back(alpha[i] + s);
             }
         }
+        
         /* Generate the next random point in the sequence. */
         std::vector<double> operator()()
         {
@@ -50,6 +51,7 @@ namespace quasirand
             }
             return point;
         }
+
         /* Generate the n-th point in the sequence. */
         std::vector<double> operator()(size_t n) const
         {
@@ -61,6 +63,16 @@ namespace quasirand
             }
             return nth_point;
         }
+
+        /* Discard the next n points of the sequence. */
+        void discard(size_t n = 1)
+        {
+            for (size_t i = 0; i < n; i++)
+            {
+                operator()();
+            }
+        }
+
         /* Set the seed. */
         void seed(double seed)
         {
