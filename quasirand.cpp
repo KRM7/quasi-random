@@ -4,6 +4,7 @@
 #include <vector>
 
 using namespace std;
+using namespace quasirand;
 
 int main()
 {
