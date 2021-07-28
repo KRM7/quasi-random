@@ -23,7 +23,7 @@ namespace quasirand
     {
     public:
 
-        /* Construct the generator in dim dimensions with a seed. */
+        /* Construct the generator in dim dimensions. */
         QuasiRandom(size_t dim) : dim(dim)
         {
             if (dim == 0)
@@ -86,10 +86,14 @@ namespace quasirand
         std::vector<double> point;
 
         /* Approximate the generalized golden ratio in dim dimensions. */
-        static double phi(size_t dim, size_t depth = 30)
+        static double phi(size_t dim, size_t n = 30)
         {
-            if (depth == 0) return 1.0;
-            else return pow(1.0 + phi(dim, depth - 1), 1.0/(dim + 1.0));
+            double phid = 1.0;
+            for (; n > 0; n--)
+            {
+                phid = pow(1.0 + phid, 1.0 / (dim + 1.0));
+            }
+            return phid;
         }
     };
 } // namespace quasirand
