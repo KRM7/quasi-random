@@ -1,3 +1,5 @@
+/* Copyright (c) 2021 Krisztián Rugási. Subject to the MIT license. */
+
 /*
 * A simple quasi-random number generator implementation for generating low-discrepancy
 * sequences.
@@ -24,12 +26,9 @@ namespace quasirand
     public:
 
         /* Construct the generator in dim dimensions. */
-        QuasiRandom(size_t dim) : dim(dim)
+        QuasiRandom(size_t dim) : dim(dim), s(0.5)
         {
-            if (dim == 0)
-            {
-                throw std::invalid_argument("The dimension of the generator must be at least 1.");
-            }
+            if (dim == 0) throw std::invalid_argument("The dimension of the generator must be at least 1.");
 
             alpha.reserve(dim);
             point.reserve(dim);
@@ -81,7 +80,7 @@ namespace quasirand
 
     private:
         const size_t dim;
-        double s = 0.5;
+        double s;
         std::vector<double> alpha;
         std::vector<double> point;
 
@@ -96,5 +95,7 @@ namespace quasirand
             return phid;
         }
     };
+
 } // namespace quasirand
+
 #endif
