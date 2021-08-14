@@ -35,7 +35,7 @@ int main()
 }
 ```
 
-## Plots showing some generated sequences
+## Examples of generated sequences
 
 #### <center>2-dimensions</center>
 
