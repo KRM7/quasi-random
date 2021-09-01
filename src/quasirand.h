@@ -1,4 +1,4 @@
-/* Copyright (c) 2021 Kriszti√°n Rug√°si. Subject to the MIT license. */
+/* Copyright (c) 2021 Kriszti·n Rug·si. Subject to the MIT license. */
 
 /*
 * A simple quasi-random number generator implementation for generating low-discrepancy
