@@ -1,2 +1,5 @@
-/.vscode
-/quasirand.exe
+.vscode
+quasirand.cpp
+points.txt
+quasirand.exe
+quasirand.py
