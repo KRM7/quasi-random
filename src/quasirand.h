@@ -26,19 +26,21 @@ namespace quasirand
     public:
 
         /* Construct the generator in dim dimensions. */
-        QuasiRandom(size_t dim, RealType seed = 0.5);
+        explicit QuasiRandom(size_t dim, RealType seed = 0.5);
 
         /* Generate the next random point in the sequence. */
-        std::vector<RealType> operator()();
+        [[nodiscard]]
+        std::vector<RealType> operator()() noexcept;
 
         /* Generate the n-th point in the sequence. */
+        [[nodiscard]]
         std::vector<RealType> operator()(size_t n) const;
 
         /* Discard the next n points of the sequence. */
-        void discard(size_t n = 1);
+        void discard(size_t n = 1) noexcept;
 
         /* Set the seed of the generator. */
-        void seed(RealType new_seed);
+        void seed(RealType new_seed) noexcept;
 
     private:
         const size_t dim_;              /* The dimension of the generated points of the sequence. */
@@ -47,7 +49,7 @@ namespace quasirand
         std::vector<RealType> point_;   /* The current/last point generated in the sequence. */
 
         /* Approximate the generalized golden ratio in dim dimensions. */
-        static RealType phi(size_t dim, size_t n = 30);
+        static RealType phi(size_t dim, size_t n = 30) noexcept;
     };
 
 } // namespace quasirand
@@ -78,7 +80,7 @@ namespace quasirand
     }
 
     template<typename RealType>
-    inline std::vector<RealType> QuasiRandom<RealType>::operator()()
+    inline std::vector<RealType> QuasiRandom<RealType>::operator()() noexcept
     {
         for (size_t i = 0; i < point_.size(); i++)
         {
@@ -104,7 +106,7 @@ namespace quasirand
     }
 
     template<typename RealType>
-    inline void QuasiRandom<RealType>::discard(size_t n)
+    inline void QuasiRandom<RealType>::discard(size_t n) noexcept
     {
         for (; n > 0; n--)
         {
@@ -113,13 +115,13 @@ namespace quasirand
     }
 
     template<typename RealType>
-    inline void QuasiRandom<RealType>::seed(RealType new_seed)
+    inline void QuasiRandom<RealType>::seed(RealType new_seed) noexcept
     {
         seed_ = new_seed;
     }
 
     template<typename RealType>
-    inline RealType QuasiRandom<RealType>::phi(size_t dim, size_t n)
+    inline RealType QuasiRandom<RealType>::phi(size_t dim, size_t n) noexcept
     {
         RealType phid = 1.0;
         for (; n > 0; n--)
