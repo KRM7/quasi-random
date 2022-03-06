@@ -1,5 +1,4 @@
-.vscode
-quasirand.cpp
+.vscode/*
+build/*
+plot.*
 points.txt
-quasirand.exe
-quasirand.py
