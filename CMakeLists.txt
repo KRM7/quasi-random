@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 project(quasirandom LANGUAGES CXX)
 
+include(CTest)
+
 add_executable(qtest ${CMAKE_CURRENT_SOURCE_DIR}/test/quasirand.cpp)
 
 set(WFLAGS -Wall -Wextra -pedantic)
