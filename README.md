@@ -1,22 +1,22 @@
 # Quasi-random number generator
 
-<p>A simple quasi-random number generator implementation in C++ for generating low-discrepancy sequences. <br>
-It generates points in any number of dimensions on a unit hypercube.  
+<p>A simple quasi-random number generator implementation in C++ for generating low-discrepancy sequences.<br>
+It generates points on a unit hypercube in any number of dimensions.  
 </p>
 
-The generator is based on:  
+Based on:  
 &nbsp;&nbsp; *Martin Roberts, 2018. "[The Unreasonable Effectiveness of Quasirandom Sequences](http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/)"*  
 
-## Usage example
+## Usage
 
 ```cpp
-#include "quasirand.h"
+#include "quasirand.hpp"
 
 using namespace quasirand;
 
 int main()
 {
-    /* Initialize the generator in 3 dimensions. */
+    /* Initialize a generator in 3 dimensions. */
     QuasiRandom qrng(3);
 
     /* Generate the next point of the sequence. */
@@ -29,9 +29,7 @@ int main()
     qrng.discard();
 
     /* Set a seed different from the default one. */
-    qrng.seed(0.13);
-
-    return 0;
+    qrng.reset(0.13);
 }
 ```
 
