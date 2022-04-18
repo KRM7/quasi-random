@@ -6,6 +6,7 @@
 #include <vector>
 #include <concepts>
 #include <cstddef>
+#include <tuple>
 
 namespace quasirand
 {
@@ -65,7 +66,7 @@ namespace quasirand
 namespace quasirand
 {
     template<std::floating_point T>
-    inline QuasiRandom<T>::QuasiRandom(size_t dim, T seed) : dim_(dim), seed_(seed)
+    QuasiRandom<T>::QuasiRandom(size_t dim, T seed) : dim_(dim), seed_(seed)
     {
         if (dim == 0) { throw std::invalid_argument("The dimension of the generator must be at least 1."); }
         if (seed < 0.0) { throw std::invalid_argument("The seed value can't be negative."); }
@@ -82,7 +83,7 @@ namespace quasirand
     }
 
     template<std::floating_point T>
-    inline auto QuasiRandom<T>::operator()() noexcept -> result_type
+    auto QuasiRandom<T>::operator()() noexcept -> result_type
     {
         for (size_t i = 0; i < point_.size(); i++)
         {
@@ -94,7 +95,7 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline auto QuasiRandom<RealType>::operator()(size_t n) const -> result_type
+    auto QuasiRandom<RealType>::operator()(size_t n) const -> result_type
     {
         result_type nth_point(dim_);
 
@@ -108,16 +109,13 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline void QuasiRandom<RealType>::discard(size_t n) noexcept
+    void QuasiRandom<RealType>::discard(size_t n) noexcept
     {
-        for (; n > 0; n--)
-        {
-            std::ignore = operator()();
-        }
+        while (n--) std::ignore = operator()();
     }
 
     template<std::floating_point RealType>
-    inline void QuasiRandom<RealType>::reset(RealType new_seed)
+    void QuasiRandom<RealType>::reset(RealType new_seed)
     {
         if (new_seed < 0.0) { throw std::invalid_argument("The seed value can't be negative."); }
 
@@ -132,10 +130,10 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline RealType QuasiRandom<RealType>::phi(size_t dim, size_t n)
+    RealType QuasiRandom<RealType>::phi(size_t dim, size_t n)
     {
         RealType phid = 1.0;
-        for (; n > 0; n--)
+        while (n--)
         {
             phid = std::pow(1.0 + phid, 1.0 / (dim + 1.0));
         }
