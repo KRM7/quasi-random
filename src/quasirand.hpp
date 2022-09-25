@@ -6,7 +6,6 @@
 #include <vector>
 #include <concepts>
 #include <cstddef>
-#include <tuple>
 
 namespace quasirand
 {
@@ -19,38 +18,38 @@ namespace quasirand
     {
     public:
         using result_type = std::vector<RealType>;
-        using state_type = std::vector<RealType>;
-        using size_t = std::size_t;
+        using state_type  = std::vector<RealType>;
+        using size_type   = std::size_t;
 
         /* Construct the generator in dim dimensions. */
-        explicit QuasiRandom(size_t dim, RealType seed = 0.5);
+        explicit QuasiRandom(size_type dim, RealType seed = 0.5);
 
         /* Generate the next random point in the sequence. */
         [[nodiscard]]
-        result_type operator()() noexcept;
+        result_type operator()();
 
         /* Generate the n-th point in the sequence. */
         [[nodiscard]]
-        result_type operator()(size_t n) const;
+        result_type operator()(size_type n) const;
 
         /* Discard the next n points of the sequence. */
-        void discard(size_t n = 1) noexcept;
+        void discard(size_type n = 1);
 
         /* Set a new seed for the generator. */
         void reset(RealType new_seed);
 
         /* Return the generator's number of dimensions. */
         [[nodiscard]]
-        size_t dim() const noexcept;
+        size_type dim() const noexcept;
 
     private:
-        const size_t dim_;      /* The dimension of the generated points of the sequence. */
+        size_type dim_;         /* The dimension of the generated points of the sequence. */
         RealType seed_;         /* The seed used. */
         state_type alpha_;      /* The initial point of the sequence (without considering the seed). */
         state_type point_;      /* The current/last point generated in the sequence. */
 
         /* Approximate the generalized golden ratio in dim dimensions. */
-        static RealType phi(size_t dim, size_t n = 30);
+        static constexpr RealType phi(size_t dim, size_t n = 30) noexcept;
     };
 
 } // namespace quasirand
@@ -66,71 +65,69 @@ namespace quasirand
 namespace quasirand
 {
     template<std::floating_point T>
-    QuasiRandom<T>::QuasiRandom(size_t dim, T seed) : dim_(dim), seed_(seed)
+    QuasiRandom<T>::QuasiRandom(size_type dim, T seed) :
+        dim_(dim), seed_(seed), alpha_(dim, 0.0), point_(dim, 0.0)
     {
-        if (dim == 0) { throw std::invalid_argument("The dimension of the generator must be at least 1."); }
-        if (seed < 0.0) { throw std::invalid_argument("The seed value can't be negative."); }
+        if (dim == 0) throw std::invalid_argument("The dimension of the generator must be at least 1.");
+        if (seed < 0.0) throw std::invalid_argument("The seed value can't be negative.");
 
-        alpha_.reserve(dim);
-        point_.reserve(dim);
-
-        T phid = phi(dim);
-        for (size_t i = 0; i < dim; i++)
+        const T phid = phi(dim);
+        for (size_type i = 0; i < dim; i++)
         {
-            alpha_.push_back(1.0 / std::pow(phid, i + 1));
-            point_.push_back(seed_);
+            alpha_[i] = 1.0 / std::pow(phid, i + 1);
+            point_[i] = seed_;
         }
     }
 
     template<std::floating_point T>
-    auto QuasiRandom<T>::operator()() noexcept -> result_type
+    inline auto QuasiRandom<T>::operator()() -> result_type
     {
-        for (size_t i = 0; i < point_.size(); i++)
+        for (size_type i = 0; i < point_.size(); i++)
         {
             point_[i] += alpha_[i];
-            point_[i] -= std::floor(point_[i]);
+            point_[i] -= size_type(point_[i]);
         }
 
         return point_;
     }
 
     template<std::floating_point RealType>
-    auto QuasiRandom<RealType>::operator()(size_t n) const -> result_type
+    inline auto QuasiRandom<RealType>::operator()(size_type n) const -> result_type
     {
         result_type nth_point(dim_);
 
-        for (size_t i = 0; i < dim_; i++)
+        for (size_type i = 0; i < dim_; i++)
         {
             nth_point[i] = seed_ + alpha_[i] * n;
-            nth_point[i] -= std::floor(nth_point[i]);
+            nth_point[i] -= size_type(nth_point[i]);
         }
 
         return nth_point;
     }
 
     template<std::floating_point RealType>
-    void QuasiRandom<RealType>::discard(size_t n) noexcept
+    inline void QuasiRandom<RealType>::discard(size_type n)
     {
-        while (n--) std::ignore = operator()();
+        while (n--) (void)operator()();
     }
 
     template<std::floating_point RealType>
-    void QuasiRandom<RealType>::reset(RealType new_seed)
+    inline void QuasiRandom<RealType>::reset(RealType new_seed)
     {
-        if (new_seed < 0.0) { throw std::invalid_argument("The seed value can't be negative."); }
+        if (new_seed < 0.0) throw std::invalid_argument("The seed value can't be negative.");
 
         seed_ = new_seed;
         std::fill(point_.begin(), point_.end(), seed_);
     }
 
     template<std::floating_point RealType>
-    size_t QuasiRandom<RealType>::dim() const noexcept
+    inline auto QuasiRandom<RealType>::dim() const noexcept -> size_type
     {
         return dim_;
     }
 
     template<std::floating_point RealType>
-    RealType QuasiRandom<RealType>::phi(size_t dim, size_t n)
+    constexpr inline RealType QuasiRandom<RealType>::phi(size_type dim, size_t n) noexcept
     {
         RealType phid = 1.0;
         while (n--)
