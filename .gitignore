@@ -1,4 +1,8 @@
 .vscode/*
+.vs/*
+.cache/*
 build/*
+out/*
 plot.*
 points.txt
+TODO.txt
