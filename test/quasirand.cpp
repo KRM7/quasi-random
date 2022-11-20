@@ -6,78 +6,104 @@
 using namespace quasirand;
 
 
-TEST_CASE("dimensions of the generator")
+TEST_CASE("dynamic generator")
 {
-    SECTION("good")
+    SECTION("ctor")
     {
-        size_t dim = GENERATE(1, 2, 3, 5, 10, 5123, 31242025);
+        REQUIRE_NOTHROW(QuasiRandom(1));
+        REQUIRE_NOTHROW(QuasiRandom(2, 0.3));
+
+        REQUIRE_THROWS(QuasiRandom(0, 0.3));
+        REQUIRE_THROWS(QuasiRandom(0, 1.3));
+        REQUIRE_THROWS(QuasiRandom(1, -1.3));
+    }
+
+    SECTION("dimensions")
+    {
+        size_t dim = GENERATE(1, 2, 3, 5, 10);
 
         QuasiRandom qrng(dim);
 
-        REQUIRE(qrng.dim() == dim);
-        REQUIRE(qrng().size() == dim);
+        REQUIRE(qrng.dim()     == dim);
+        REQUIRE(qrng().size()  == dim);
         REQUIRE(qrng(0).size() == dim);
-        REQUIRE(qrng(101).size() == dim);
     }
 
-    SECTION("bad")
+    QuasiRandom qrng(3);
+
+    SECTION("discard")
     {
-        REQUIRE_THROWS_AS(QuasiRandom(0), std::invalid_argument);
+        qrng.discard();
+        qrng.discard(3);
+
+        REQUIRE(qrng() == qrng(5));
+    }
+
+    SECTION("reset")
+    {
+        qrng.discard(7);
+        qrng.reset();
+
+        REQUIRE(qrng() == qrng(1));
+    }
+
+    SECTION("types")
+    {
+        STATIC_REQUIRE(std::is_same_v<decltype(qrng)::result_type, std::vector<double>>);
+        STATIC_REQUIRE(std::is_same_v<decltype(qrng)::state_type, std::vector<double>>);
+
+        QuasiRandom<DYNAMIC, float> fqrng(2);
+
+        STATIC_REQUIRE(std::is_same_v<decltype(fqrng)::result_type, std::vector<float>>);
+        STATIC_REQUIRE(std::is_same_v<decltype(fqrng)::state_type, std::vector<float>>);
     }
 }
 
-TEST_CASE("seeding")
+TEST_CASE("static size")
 {
-    SECTION("good")
+    SECTION("ctor")
     {
-        double seed = GENERATE(0.0, 0.1, 0.23, 0.7, 1.3, 351.24);
+        REQUIRE_NOTHROW(QuasiRandom<2>{});
+        REQUIRE_NOTHROW(QuasiRandom<2>{ 0.3 });
 
-        QuasiRandom qrng(2, seed);
-        auto null = qrng(0);
-
-        REQUIRE(std::all_of(null.begin(), null.end(), [seed](double p) { return p == Catch::Approx(seed - std::floor(seed)); }));
+        REQUIRE_THROWS(QuasiRandom<2>{ -3.2 });
     }
 
-    SECTION("bad")
+    SECTION("dimensions")
     {
-        QuasiRandom qrng(2);
+        constexpr size_t DIM = 7;
+        constexpr QuasiRandom<DIM> qrng;
 
-        REQUIRE_THROWS_AS(qrng.reset(-1.0), std::invalid_argument);
-        REQUIRE_THROWS_AS(QuasiRandom(3, -900.5), std::invalid_argument);
-    }
-}
-
-TEST_CASE("generated values")
-{
-    size_t dim = GENERATE(1, 2, 3, 5, 10, 500);
-
-    QuasiRandom qrng(dim);
-
-    for (size_t i = 0; i < 13; i++)
-    {
-        std::ignore = qrng();
+        STATIC_REQUIRE(qrng.dim()     == DIM);
+        STATIC_REQUIRE(qrng(0).size() == DIM);
     }
 
-    auto val1 = qrng();
-    auto val2 = qrng(14);
-    for (size_t i = 0; i < val1.size(); i++)
+    QuasiRandom<3> qrng;
+
+    SECTION("discard")
     {
-        REQUIRE(val1[i] == Catch::Approx(val2[i]));
+        qrng.discard();
+        qrng.discard(3);
+
+        REQUIRE(qrng() == qrng(5));
     }
 
-    qrng.discard();
-    val1 = qrng();
-    val2 = qrng(16);
-    for (size_t i = 0; i < val1.size(); i++)
+    SECTION("reset")
     {
-        REQUIRE(val1[i] == Catch::Approx(val2[i]));
+        qrng.discard(7);
+        qrng.reset();
+
+        REQUIRE(qrng() == qrng(1));
     }
 
-    qrng.discard(3);
-    val1 = qrng();
-    val2 = qrng(20);
-    for (size_t i = 0; i < val1.size(); i++)
+    SECTION("types")
     {
-        REQUIRE(val1[i] == Catch::Approx(val2[i]));
+        STATIC_REQUIRE(std::is_same_v<decltype(qrng)::result_type, std::array<double, qrng.dim()>>);
+        STATIC_REQUIRE(std::is_same_v<decltype(qrng)::state_type,  std::array<double, qrng.dim()>>);
+
+        QuasiRandom<5, float> fqrng;
+
+        STATIC_REQUIRE(std::is_same_v<decltype(fqrng)::result_type, std::array<float, 5>>);
+        STATIC_REQUIRE(std::is_same_v<decltype(fqrng)::state_type,  std::array<float, 5>>);
     }
 }
