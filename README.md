@@ -32,6 +32,23 @@ int main()
     qrng.reset(0.13);
 }
 ```
+### Static generator dimensions
+The dimension of the generator can also be chosen at compile time:
+
+```cpp
+#include "quasirand.hpp"
+
+using namespace quasirand;
+
+int main()
+{
+    /* Initialize a generator in 3 dimensions. */
+    QuasiRandom<3> qrng;
+
+    /* Generate the next point of the sequence. */
+    array<double, 3> point = qrng();
+}
+```
 
 ## Examples of generated sequences
 
