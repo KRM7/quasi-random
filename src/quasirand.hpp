@@ -12,7 +12,7 @@ namespace quasirand::detail
 {
     /* Approximation of the generalized golden ratio in dim dimensions. */
     template<std::floating_point RealType>
-    constexpr RealType phi(std::size_t dim, std::size_t n = 30) noexcept;
+    RealType phi(std::size_t dim, std::size_t n = 30) noexcept;
 
 } // namespace quasirand::detail
 
@@ -36,24 +36,24 @@ namespace quasirand
         using size_type   = std::size_t;
 
         /* Construct a generator. */
-        constexpr QuasiRandom() noexcept;
+        QuasiRandom() noexcept;
 
         /* Construct a generator using the specified seed. The seed must be in the range [0.0, 1.0). */
-        constexpr explicit QuasiRandom(RealType seed);
+        explicit QuasiRandom(RealType seed);
 
         /* Generate the next point in the sequence. */
         [[nodiscard]]
-        result_type operator()() noexcept;
+        constexpr result_type operator()() noexcept;
 
         /* Return the n-th point of the sequence. Doesn't affect the state of the generator. */
         [[nodiscard]]
         constexpr result_type operator()(size_type n) const noexcept;
-
+        
         /* Discard the next n points of the sequence. */
-        void discard(size_type n = 1) noexcept;
+        constexpr void discard(size_type n = 1) noexcept;
 
         /* Restart the sequence. */
-        void reset() noexcept;
+        constexpr void reset() noexcept;
 
         /* Restart the sequence using a new seed. The seed must be in the range [0.0, 1.0). */
         constexpr void reset(RealType new_seed);
@@ -89,21 +89,21 @@ namespace quasirand
 
         /* Generate the next point in the sequence. */
         [[nodiscard]]
-        result_type operator()();
+        constexpr result_type operator()();
 
         /* Return the n-th point of the sequence. Doesn't affect the state of the generator. */
         [[nodiscard]]
-        result_type operator()(size_type n) const;
+        constexpr result_type operator()(size_type n) const;
 
         /* Discard the next n points of the sequence. */
-        void discard(size_type n = 1);
+        constexpr void discard(size_type n = 1);
 
         /* Restart the sequence using a new seed. The seed must be in the range [0.0, 1.0). */
-        void reset(RealType new_seed = 0.5);
+        constexpr void reset(RealType new_seed = 0.5);
 
         /* Return the generator's number of dimensions. */
         [[nodiscard]]
-        size_type dim() const noexcept;
+        constexpr size_type dim() const noexcept;
 
     private:
         size_type dim_;         /* The dimension of the sequence's points. */
@@ -114,7 +114,7 @@ namespace quasirand
 
     /* DEDUCTION GUIDES */
 
-    QuasiRandom(std::size_t dim) -> QuasiRandom<DYNAMIC>;
+    QuasiRandom(std::size_t dim) -> QuasiRandom<DYNAMIC, double>;
 
     template<std::floating_point RealType>
     QuasiRandom(std::size_t dim, RealType seed) -> QuasiRandom<DYNAMIC, RealType>;
@@ -134,10 +134,10 @@ namespace quasirand
     /* STATIC GENERATOR IMPLEMENTATION */
 
     template<std::size_t Dim, std::floating_point RealType>
-    constexpr QuasiRandom<Dim, RealType>::QuasiRandom() noexcept :
+    QuasiRandom<Dim, RealType>::QuasiRandom() noexcept :
         seed_(0.5)
     {
-        constexpr RealType phid = detail::phi<RealType>(Dim);
+        const RealType phid = detail::phi<RealType>(Dim);
         for (size_type i = 0; i < Dim; i++)
         {
             alpha_[i] = 1.0 / std::pow(phid, i + 1);
@@ -146,12 +146,12 @@ namespace quasirand
     }
 
     template<std::size_t Dim, std::floating_point RealType>
-    constexpr QuasiRandom<Dim, RealType>::QuasiRandom(RealType seed) :
+    QuasiRandom<Dim, RealType>::QuasiRandom(RealType seed) :
         seed_(seed)
     {
         if (!(0.0 <= seed && seed < 1.0)) throw std::invalid_argument("The seed must be in the range [0.0, 1.0).");
 
-        constexpr RealType phid = detail::phi<RealType>(Dim);
+        const RealType phid = detail::phi<RealType>(Dim);
         for (size_type i = 0; i < Dim; i++)
         {
             alpha_[i] = 1.0 / std::pow(phid, i + 1);
@@ -160,7 +160,7 @@ namespace quasirand
     }
 
     template<std::size_t Dim, std::floating_point RealType>
-    auto QuasiRandom<Dim, RealType>::operator()() noexcept -> result_type
+    constexpr auto QuasiRandom<Dim, RealType>::operator()() noexcept -> result_type
     {
         for (size_type i = 0; i < point_.size(); i++)
         {
@@ -186,13 +186,13 @@ namespace quasirand
     }
 
     template<std::size_t Dim, std::floating_point RealType>
-    void QuasiRandom<Dim, RealType>::discard(size_type n) noexcept
+    constexpr void QuasiRandom<Dim, RealType>::discard(size_type n) noexcept
     {
         while (n--) (void)operator()();
     }
 
     template<std::size_t Dim, std::floating_point RealType>
-    void QuasiRandom<Dim, RealType>::reset() noexcept
+    constexpr void QuasiRandom<Dim, RealType>::reset() noexcept
     {
         std::fill(point_.begin(), point_.end(), seed_);
     }
@@ -231,7 +231,7 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline auto QuasiRandom<DYNAMIC, RealType>::operator()() -> result_type
+    constexpr auto QuasiRandom<DYNAMIC, RealType>::operator()() -> result_type
     {
         for (size_type i = 0; i < point_.size(); i++)
         {
@@ -243,7 +243,7 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline auto QuasiRandom<DYNAMIC, RealType>::operator()(size_type n) const -> result_type
+    constexpr auto QuasiRandom<DYNAMIC, RealType>::operator()(size_type n) const -> result_type
     {
         result_type nth_point(dim_);
 
@@ -257,13 +257,13 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline void QuasiRandom<DYNAMIC, RealType>::discard(size_type n)
+    constexpr void QuasiRandom<DYNAMIC, RealType>::discard(size_type n)
     {
         while (n--) (void)operator()();
     }
 
     template<std::floating_point RealType>
-    inline void QuasiRandom<DYNAMIC, RealType>::reset(RealType new_seed)
+    constexpr void QuasiRandom<DYNAMIC, RealType>::reset(RealType new_seed)
     {
         if (!(0.0 <= new_seed && new_seed < 1.0)) throw std::invalid_argument("The seed must be in the range [0.0, 1.0).");
 
@@ -272,7 +272,7 @@ namespace quasirand
     }
 
     template<std::floating_point RealType>
-    inline auto QuasiRandom<DYNAMIC, RealType>::dim() const noexcept -> size_type
+    constexpr auto QuasiRandom<DYNAMIC, RealType>::dim() const noexcept -> size_type
     {
         return dim_;
     }
@@ -283,7 +283,7 @@ namespace quasirand
 namespace quasirand::detail
 {
     template<std::floating_point RealType>
-    constexpr RealType phi(std::size_t dim, std::size_t n) noexcept
+    RealType phi(std::size_t dim, std::size_t n) noexcept
     {
         RealType phid = 1.0;
         RealType exponent = 1.0 / (dim + 1.0);

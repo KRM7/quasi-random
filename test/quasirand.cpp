@@ -72,10 +72,10 @@ TEST_CASE("static size")
     SECTION("dimensions")
     {
         constexpr size_t DIM = 7;
-        constexpr QuasiRandom<DIM> qrng;
+        QuasiRandom<DIM> qrng;
 
-        STATIC_REQUIRE(qrng.dim()     == DIM);
-        STATIC_REQUIRE(qrng(0).size() == DIM);
+        REQUIRE(qrng.dim()     == DIM);
+        REQUIRE(qrng(0).size() == DIM);
     }
 
     QuasiRandom<3> qrng;
